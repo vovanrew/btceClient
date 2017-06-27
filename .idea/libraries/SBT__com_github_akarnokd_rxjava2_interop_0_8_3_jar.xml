@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="SBT: com.github.akarnokd:rxjava2-interop:0.8.3:jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.github.akarnokd/rxjava2-interop/jars/rxjava2-interop-0.8.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/com.github.akarnokd/rxjava2-interop/srcs/rxjava2-interop-0.8.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

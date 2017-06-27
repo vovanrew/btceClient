@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="SBT: ws.wamp.jawampa:jawampa-netty:0.4.2:jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/ws.wamp.jawampa/jawampa-netty/jars/jawampa-netty-0.4.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.ivy2/cache/ws.wamp.jawampa/jawampa-netty/srcs/jawampa-netty-0.4.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
