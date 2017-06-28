@@ -48,17 +48,11 @@ class BTCEClient extends Actor with ActorLogging with InitConfs {
   final implicit val materializer: ActorMaterializer =
   ActorMaterializer(ActorMaterializerSettings(context.system))
 
-  val props = new Properties()
-  props.put("bootstrap.servers", kafkaHost + ":" + kafkaPort.toString)
-  props.put("acks", "all")
-  props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
-  props.put("value.serializer", "common.serialization.MarketDataSerializer")
-
   private var lastTradeId: Long = 1
 
   private var lastOrderBookId: Long = 1
 
-  private val kafkaProducer: BTCEKafkaProducer = new BTCEKafkaProducer(props)
+  private val kafkaProducer: BTCEKafkaProducer = new BTCEKafkaProducer
 
   override def receive: Receive = {
 
@@ -85,18 +79,40 @@ class BTCEClient extends Actor with ActorLogging with InitConfs {
 
 
     case GetTicker(pair) =>
-      val ticker = marketDataService.getTicker(pair)
+      val ticker = Try(marketDataService.getTicker(pair)) match {
 
-      kafkaProducer.send("TICKER", ticker.getCurrencyPair,
-        Ticker(ticker.getCurrencyPair,
-          ticker.getLast,
-          ticker.getBid,
-          ticker.getAsk,
-          ticker.getHigh,
-          ticker.getLow,
-          ticker.getVwap,
-          ticker.getVolume,
-          ticker.getTimestamp))
+        case Success(ticker) => {
+          val vWap: BigDecimal = ticker.getVwap match {
+            case null =>
+              0
+            case value: java.math.BigDecimal =>
+              value
+          }
+
+          val timeStamp: BigDecimal = ticker.getTimestamp match {
+            case null =>
+              System.currentTimeMillis()
+            case value: java.util.Date =>
+              value.getTime
+          }
+
+          println("\n\n\n\n\n\nTICKER" + ticker + "\n\n\n\n\n\n")
+
+          kafkaProducer.send("TICKER", ticker.getCurrencyPair,
+            Ticker(ticker.getCurrencyPair,
+              ticker.getLast,
+              ticker.getBid,
+              ticker.getAsk,
+              ticker.getHigh,
+              ticker.getLow,
+              vWap, //DANGEROUS field had a null value
+              ticker.getVolume,
+              timeStamp))
+        }
+
+        case Failure(exception) =>
+          println("\n\n\n" + exception + "\n\n\n\n\n\nEXCEPTION\n\n\n\n\n\n\n")
+      }
 
 
     case GetTrages(pair) =>
@@ -116,6 +132,8 @@ class BTCEClient extends Actor with ActorLogging with InitConfs {
                   trade.getTimestamp,
                   trade.getId))
             }
+
+          println("\n\n\n\n\n\nTRADE" + trades.getTrades.get(trades.getTrades.size() - 1) + "\n\n\n\n\n\n")
 
           lastTradeId = trades.getTrades.get(trades.getTrades.size() - 1).getId.toLong
         }

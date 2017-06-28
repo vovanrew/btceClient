@@ -13,4 +13,4 @@ case class Ticker(currencyPair: CurrencyPair,
                   low: BigDecimal,
                   vwap: BigDecimal,
                   volume: BigDecimal,
-                  timestamp: Date) extends MarketData
+                  timestamp: BigDecimal) extends MarketData

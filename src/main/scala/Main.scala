@@ -16,17 +16,15 @@ object Main extends App {
   def queryData = {
     btce ! BTCEClient.GetTrages(BTCECurrencies.BTC_USD)
     btce ! BTCEClient.GetTrages(BTCECurrencies.BTC_ETH)
-    btce ! BTCEClient.GetTrages(BTCECurrencies.BTC_XMR)
 
 
     btce ! BTCEClient.GetTicker(BTCECurrencies.BTC_USD)
     btce ! BTCEClient.GetTicker(BTCECurrencies.BTC_ETH)
-    btce ! BTCEClient.GetTicker(BTCECurrencies.BTC_XMR)
+
   }
 
-  system.scheduler.schedule(0 second, 20 second, btce,BTCEClient.GetOrderBook(BTCECurrencies.BTC_USD, 5))
-  system.scheduler.schedule(0 second, 20 second, btce,BTCEClient.GetOrderBook(BTCECurrencies.BTC_ETH, 5))
-  system.scheduler.schedule(0 second, 20 second, btce,BTCEClient.GetOrderBook(BTCECurrencies.BTC_XMR, 5))
+//  system.scheduler.schedule(0 second, 20 second, btce,BTCEClient.GetOrderBook(BTCECurrencies.BTC_USD, 5))
+//  system.scheduler.schedule(0 second, 20 second, btce,BTCEClient.GetOrderBook(BTCECurrencies.BTC_ETH, 5))
 
   system.scheduler.schedule(0 second, 2 seconds)(queryData)
 }
