@@ -1,7 +1,5 @@
 package clients.xchange
 
-import java.util.Properties
-
 import akka.actor.{Actor, ActorLogging, Props}
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpRequest
@@ -12,10 +10,9 @@ import common.marketdata.{OrderBook, Ticker, Trade}
 import org.knowm.xchange.btce.v3.BTCEExchange
 import org.knowm.xchange.currency.CurrencyPair
 import org.knowm.xchange.dto.marketdata
-import org.knowm.xchange.dto.trade.LimitOrder
 import org.knowm.xchange.service.marketdata.MarketDataService
 import org.knowm.xchange.{Exchange, ExchangeFactory}
-
+import common.BTCECurrencies._
 import scala.collection.JavaConverters._
 import scala.util.{Failure, Success, Try}
 
@@ -74,7 +71,7 @@ class BTCEClient extends Actor with ActorLogging with InitConfs {
     case GetOrderBook(pair, depth) =>
       val orderBook = marketDataService.getOrderBook(CurrencyPair.BTC_USD, depth.asInstanceOf[Object])
 
-      kafkaProducer.send("ORDERBOOK", pair, OrderBook(orderBook.getTimeStamp,
+      kafkaProducer.send("ORDERBOOK", btcFirst(pair.toString), OrderBook(orderBook.getTimeStamp,
         orderBook.getAsks.asScala.toList, orderBook.getBids.asScala.toList))
 
 
@@ -96,9 +93,9 @@ class BTCEClient extends Actor with ActorLogging with InitConfs {
               value.getTime
           }
 
-          println("\n\n\n\n\n\nTICKER" + ticker + "\n\n\n\n\n\n")
+          println("\n\n\n\n\n\nTICKER: " + btcFirst(pair.toString) + "\n\n\n\n\n\n")
 
-          kafkaProducer.send("TICKER", ticker.getCurrencyPair,
+          kafkaProducer.send("TICKER", btcFirst(pair.toString),
             Ticker(ticker.getCurrencyPair,
               ticker.getLast,
               ticker.getBid,
@@ -124,7 +121,7 @@ class BTCEClient extends Actor with ActorLogging with InitConfs {
           trades.getTrades.asScala
             .filter { trade: marketdata.Trade => trade.getId.toLong > lastTradeId }
             .foreach { trade =>
-              kafkaProducer.send("TRADE", pair,
+              kafkaProducer.send("TRADE", btcFirst(pair.toString),
                 Trade(trade.getType,
                   trade.getTradableAmount,
                   trade.getCurrencyPair,
@@ -133,7 +130,7 @@ class BTCEClient extends Actor with ActorLogging with InitConfs {
                   trade.getId))
             }
 
-          println("\n\n\n\n\n\nTRADE" + trades.getTrades.get(trades.getTrades.size() - 1) + "\n\n\n\n\n\n")
+          println("\n\n\n\n\n\nTRADE: " + btcFirst(pair.toString) + "\n\n\n\n\n\n")
 
           lastTradeId = trades.getTrades.get(trades.getTrades.size() - 1).getId.toLong
         }

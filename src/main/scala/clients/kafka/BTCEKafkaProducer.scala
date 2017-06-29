@@ -21,9 +21,9 @@ class BTCEKafkaProducer extends InitConfs {
 
   private val kafkaProducer: KafkaProducer[String, MarketData] = new KafkaProducer[String, MarketData](props)
 
-  def send(dataType: String, curencyPair: CurrencyPair, message: MarketData): Future[RecordMetadata] = {
+  def send(dataType: String, curencyPair: String, message: MarketData): Future[RecordMetadata] = {
     val record: ProducerRecord[String, MarketData] =
-      new ProducerRecord[String, MarketData](topicPrefix + "_" + dataType + "_" + curencyPair.toString.replace("/","-"),
+      new ProducerRecord[String, MarketData](topicPrefix + "_" + dataType + "_" + curencyPair.replace("/","-"),
         0,
         System.currentTimeMillis(),
         dataType.toLowerCase,

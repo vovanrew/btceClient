@@ -15,10 +15,10 @@ object Main extends App {
 
   def queryData = {
     btce ! BTCEClient.GetTrages(BTCECurrencies.BTC_USD)
-    btce ! BTCEClient.GetTrages(BTCECurrencies.BTC_ETH)
-
-
     btce ! BTCEClient.GetTicker(BTCECurrencies.BTC_USD)
+
+
+    btce ! BTCEClient.GetTrages(BTCECurrencies.BTC_ETH)
     btce ! BTCEClient.GetTicker(BTCECurrencies.BTC_ETH)
 
   }
